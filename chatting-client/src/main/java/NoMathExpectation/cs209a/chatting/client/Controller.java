@@ -11,15 +11,19 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 import java.net.URL;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Controller implements Initializable {
-
     @FXML
     ListView<Message> chatContentList;
 
@@ -28,12 +32,12 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        Dialog<String> dialog = new TextInputDialog();
+        val dialog = new TextInputDialog();
         dialog.setTitle("Login");
         dialog.setHeaderText(null);
         dialog.setContentText("Username:");
 
-        Optional<String> input = dialog.showAndWait();
+        val input = dialog.showAndWait();
         if (input.isPresent() && !input.get().isEmpty()) {
             /*
                TODO: Check if there is a user with the same name among the currently logged-in users,
@@ -41,7 +45,7 @@ public class Controller implements Initializable {
              */
             username = input.get();
         } else {
-            System.out.println("Invalid username " + input + ", exiting");
+            log.warn("Invalid username {}, exiting...", input);
             Platform.exit();
         }
 
@@ -50,21 +54,21 @@ public class Controller implements Initializable {
 
     @FXML
     public void createPrivateChat() {
-        AtomicReference<String> user = new AtomicReference<>();
+        val user = new AtomicReference<String>();
 
-        Stage stage = new Stage();
-        ComboBox<String> userSel = new ComboBox<>();
+        val stage = new Stage();
+        val userSel = new ComboBox<String>();
 
         // FIXME: get the user list from server, the current user's name should be filtered out
         userSel.getItems().addAll("Item 1", "Item 2", "Item 3");
 
-        Button okBtn = new Button("OK");
+        val okBtn = new Button("OK");
         okBtn.setOnAction(e -> {
             user.set(userSel.getSelectionModel().getSelectedItem());
             stage.close();
         });
 
-        HBox box = new HBox(10);
+        val box = new HBox(10);
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(20, 20, 20, 20));
         box.getChildren().addAll(userSel, okBtn);
@@ -107,7 +111,7 @@ public class Controller implements Initializable {
     private class MessageCellFactory implements Callback<ListView<Message>, ListCell<Message>> {
         @Override
         public ListCell<Message> call(ListView<Message> param) {
-            return new ListCell<Message>() {
+            return new ListCell<>() {
 
                 @Override
                 public void updateItem(Message msg, boolean empty) {
@@ -118,7 +122,7 @@ public class Controller implements Initializable {
 
                     HBox wrapper = new HBox();
                     Label nameLabel = new Label(msg.getSentBy());
-                    Label msgLabel = new Label(msg.getData());
+                    Label msgLabel = new Label(msg.getText());
 
                     nameLabel.setPrefSize(50, 20);
                     nameLabel.setWrapText(true);
