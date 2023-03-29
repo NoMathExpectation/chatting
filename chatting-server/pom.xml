@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>cn.edu.sustech.cs209.chatting</groupId>
+        <groupId>NoMathExpectation.cs209a</groupId>
         <artifactId>chatting</artifactId>
         <version>dev-SNAPSHOT</version>
     </parent>
@@ -13,7 +13,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>cn.edu.sustech.cs209.chatting</groupId>
+            <groupId>NoMathExpectation.cs209a</groupId>
             <artifactId>chatting-common</artifactId>
         </dependency>
     </dependencies>

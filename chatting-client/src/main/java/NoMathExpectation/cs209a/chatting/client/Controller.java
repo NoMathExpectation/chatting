@@ -1,6 +1,6 @@
-package cn.edu.sustech.cs209.chatting.client;
+package NoMathExpectation.cs209a.chatting.client;
 
-import cn.edu.sustech.cs209.chatting.common.Message;
+import NoMathExpectation.cs209a.chatting.common.Message;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

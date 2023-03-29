@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>cn.edu.sustech.cs209.chatting</groupId>
+        <groupId>NoMathExpectation.cs209a</groupId>
         <artifactId>chatting</artifactId>
         <version>dev-SNAPSHOT</version>
     </parent>
@@ -14,7 +14,7 @@
     <properties>
         <javafx.version>19.0.2.1</javafx.version>
 
-        <main-class.name>cn.edu.sustech.cs209.chatting.client.Main</main-class.name>
+        <main-class.name>NoMathExpectation.cs209a.chatting.client.Main</main-class.name>
     </properties>
 
     <dependencies>
@@ -30,7 +30,7 @@
         </dependency>
 
         <dependency>
-            <groupId>cn.edu.sustech.cs209.chatting</groupId>
+            <groupId>NoMathExpectation.cs209a</groupId>
             <artifactId>chatting-common</artifactId>
         </dependency>
     </dependencies>

@@ -1,4 +1,4 @@
-package cn.edu.sustech.cs209.chatting.server;
+package NoMathExpectation.cs209a.chatting.server;
 
 public class Main {
 

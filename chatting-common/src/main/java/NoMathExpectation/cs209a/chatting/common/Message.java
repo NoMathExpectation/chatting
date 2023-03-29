@@ -1,4 +1,4 @@
-package cn.edu.sustech.cs209.chatting.common;
+package NoMathExpectation.cs209a.chatting.common;
 
 public class Message {
 

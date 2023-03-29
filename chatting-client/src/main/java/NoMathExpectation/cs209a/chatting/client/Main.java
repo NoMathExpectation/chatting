@@ -1,4 +1,4 @@
-package cn.edu.sustech.cs209.chatting.client;
+package NoMathExpectation.cs209a.chatting.client;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
