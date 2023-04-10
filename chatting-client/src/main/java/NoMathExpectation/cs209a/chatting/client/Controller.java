@@ -1,6 +1,6 @@
 package NoMathExpectation.cs209a.chatting.client;
 
-import NoMathExpectation.cs209a.chatting.common.Message;
+import NoMathExpectation.cs209a.chatting.common.event.MessageEvent;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Controller implements Initializable {
     @FXML
-    ListView<Message> chatContentList;
+    ListView<MessageEvent> chatContentList;
 
     String username;
 
@@ -108,21 +108,21 @@ public class Controller implements Initializable {
      * You may change the cell factory if you changed the design of {@code Message} model.
      * Hint: you may also define a cell factory for the chats displayed in the left panel, or simply override the toString method.
      */
-    private class MessageCellFactory implements Callback<ListView<Message>, ListCell<Message>> {
+    private class MessageCellFactory implements Callback<ListView<MessageEvent>, ListCell<MessageEvent>> {
         @Override
-        public ListCell<Message> call(ListView<Message> param) {
+        public ListCell<MessageEvent> call(ListView<MessageEvent> param) {
             return new ListCell<>() {
 
                 @Override
-                public void updateItem(Message msg, boolean empty) {
+                public void updateItem(MessageEvent msg, boolean empty) {
                     super.updateItem(msg, empty);
                     if (empty || Objects.isNull(msg)) {
                         return;
                     }
 
                     HBox wrapper = new HBox();
-                    Label nameLabel = new Label(msg.getSentBy());
-                    Label msgLabel = new Label(msg.getText());
+                    Label nameLabel = new Label(msg.getSentBy().getName());
+                    Label msgLabel = new Label(msg.getMessage());
 
                     nameLabel.setPrefSize(50, 20);
                     nameLabel.setWrapText(true);
