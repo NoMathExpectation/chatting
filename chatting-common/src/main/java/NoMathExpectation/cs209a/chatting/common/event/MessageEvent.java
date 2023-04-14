@@ -20,10 +20,25 @@ public class MessageEvent implements Event {
     @NonNull String message;
 
     @Getter
-    private static EventKey key = new EventKey() {
+    private static EventKey<MessageEvent> key = new EventKey<>() {
+        @Override
+        public @NonNull Class<MessageEvent> getEventClass() {
+            return MessageEvent.class;
+        }
+
         @Override
         public @NonNull String getId() {
             return "MessageEvent";
+        }
+
+        @Override
+        @SneakyThrows
+        public void encode(@NonNull MessageEvent event, @NonNull OutputStream stream) {
+            val outputStream = new ObjectOutputStream(stream);
+            outputStream.writeUTF(event.time.toString());
+            outputStream.writeUTF(event.sentBy.getId().toString());
+            outputStream.writeUTF(event.sendTo.getId().toString());
+            outputStream.writeUTF(event.message);
         }
 
         @Override
@@ -41,14 +56,4 @@ public class MessageEvent implements Event {
             return new MessageEvent(time, (User) sentBy, sendTo, message);
         }
     };
-
-    @Override
-    @SneakyThrows
-    public void encode(@NonNull OutputStream stream) {
-        val outputStream = new ObjectOutputStream(stream);
-        outputStream.writeUTF(time.toString());
-        outputStream.writeUTF(sentBy.getId().toString());
-        outputStream.writeUTF(sendTo.getId().toString());
-        outputStream.writeUTF(message);
-    }
 }

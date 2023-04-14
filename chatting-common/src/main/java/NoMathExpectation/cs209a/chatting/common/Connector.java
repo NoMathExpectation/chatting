@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NonNull;
 
 import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,13 +18,16 @@ public abstract class Connector implements Runnable, Closeable {
     @Getter
     protected static Connector instance;
 
+    protected InputStream incoming = null;
+    protected OutputStream outgoing = null;
+
     protected Map<UUID, Contact> contacts = new HashMap<>();
 
     public Map<UUID, Contact> getContacts() {
         return Collections.unmodifiableMap(contacts);
     }
 
-    public abstract void sendEvent(@NonNull Event event);
+    public abstract void sendEvent(@NonNull Event event) throws IOException;
 
     @Getter
     protected boolean connected = false;
