@@ -3,11 +3,15 @@ package NoMathExpectation.cs209a.chatting.client;
 import NoMathExpectation.cs209a.chatting.common.Connector;
 import NoMathExpectation.cs209a.chatting.common.event.Event;
 import NoMathExpectation.cs209a.chatting.common.event.EventManager;
+import NoMathExpectation.cs209a.chatting.common.event.ProtocolEvent;
+import NoMathExpectation.cs209a.chatting.common.event.ResultEvent;
+import javafx.application.Platform;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.val;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -47,7 +51,19 @@ public final class ConnectorImpl extends Connector {
     @SneakyThrows
     public void run() {
         socket.connect(new InetSocketAddress(host, port));
-        this.incoming = socket.getInputStream();
-        this.outgoing = socket.getOutputStream();
+        this.incoming = new ObjectInputStream(socket.getInputStream());
+        this.outgoing = new ObjectOutputStream(socket.getOutputStream());
+
+        ProtocolEvent.key.encode(new ProtocolEvent(EventManager.hash()), outgoing);
+        outgoing.flush();
+        val resultEvent = EventManager.keyOf(incoming.readUTF()).decode(incoming);
+        if (!(resultEvent instanceof ResultEvent && ((ResultEvent) resultEvent).result == 0)) {
+            Platform.runLater(() -> {
+            }); // TODO: 2023/4/15 pop a dialog
+            socket.close();
+            return;
+        }
+
+
     }
 }

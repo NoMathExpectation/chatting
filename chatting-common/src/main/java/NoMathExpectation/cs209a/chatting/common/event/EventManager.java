@@ -4,6 +4,7 @@ import lombok.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class EventManager {
     private static final Map<@NonNull String, @NonNull EventKey<? extends Event>> keyMap = new HashMap<>();
@@ -29,7 +30,13 @@ public class EventManager {
         return keyMap.get(id);
     }
 
+    public static int hash() {
+        return Objects.hash(keyMap, classEventKeyMap);
+    }
+
     static {
-        registerEvent(MessageEvent.getKey());
+        registerEvent(ProtocolEvent.key);
+        registerEvent(ResultEvent.key);
+        registerEvent(MessageEvent.key);
     }
 }

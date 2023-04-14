@@ -30,6 +30,11 @@ public class ServerConnectorImpl extends Connector {
     }
 
     @Override
+    public boolean isConnected() {
+        return serverSocket.isBound();
+    }
+
+    @Override
     @SneakyThrows
     public void run() {
         serverSocket.bind(new InetSocketAddress(port));
