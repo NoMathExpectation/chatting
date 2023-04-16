@@ -3,10 +3,7 @@ package NoMathExpectation.cs209a.chatting.common.event;
 import NoMathExpectation.cs209a.chatting.common.Connector;
 import NoMathExpectation.cs209a.chatting.common.contact.Contact;
 import NoMathExpectation.cs209a.chatting.common.contact.User;
-import lombok.NonNull;
-import lombok.SneakyThrows;
-import lombok.Value;
-import lombok.val;
+import lombok.*;
 
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -23,6 +20,9 @@ public class MessageEvent implements Event {
     @NonNull String message;
 
     public static final EventKey<MessageEvent> key = new EventKey<>() {
+        @Getter
+        private final int version = 0;
+
         @Override
         public @NonNull Class<MessageEvent> getEventClass() {
             return MessageEvent.class;

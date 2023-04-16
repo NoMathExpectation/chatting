@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public interface EventKey<E extends Event> {
+    @NonNull int getVersion();
+
     @NonNull Class<E> getEventClass();
 
     @NonNull String getId();

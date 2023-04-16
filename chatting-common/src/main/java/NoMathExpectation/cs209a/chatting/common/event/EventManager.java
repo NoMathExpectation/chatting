@@ -2,9 +2,9 @@ package NoMathExpectation.cs209a.chatting.common.event;
 
 import lombok.NonNull;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class EventManager {
     private static final Map<@NonNull String, @NonNull EventKey<? extends Event>> keyMap = new HashMap<>();
@@ -31,7 +31,7 @@ public class EventManager {
     }
 
     public static int hash() {
-        return Objects.hash(keyMap, classEventKeyMap);
+        return Arrays.hashCode(keyMap.values().stream().mapToInt(EventKey::getVersion).toArray());
     }
 
     static {

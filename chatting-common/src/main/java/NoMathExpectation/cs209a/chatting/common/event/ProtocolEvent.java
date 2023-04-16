@@ -1,5 +1,6 @@
 package NoMathExpectation.cs209a.chatting.common.event;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.io.*;
@@ -7,6 +8,9 @@ import java.io.*;
 @RequiredArgsConstructor
 public class ProtocolEvent implements Event {
     public static final EventKey<ProtocolEvent> key = new EventKey<>() {
+        @Getter
+        private final int version = 0;
+
         @Override
         public Class<ProtocolEvent> getEventClass() {
             return ProtocolEvent.class;

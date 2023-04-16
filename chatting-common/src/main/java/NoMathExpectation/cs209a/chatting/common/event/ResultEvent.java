@@ -1,5 +1,6 @@
 package NoMathExpectation.cs209a.chatting.common.event;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -11,6 +12,9 @@ public class ResultEvent implements Event {
     public final @NonNull String reason;
 
     public static final EventKey<ResultEvent> key = new EventKey<>() {
+        @Getter
+        private final int version = 0;
+
         @Override
         public Class<ResultEvent> getEventClass() {
             return ResultEvent.class;
