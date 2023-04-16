@@ -1,5 +1,8 @@
-package NoMathExpectation.cs209a.chatting.common.event;
+package NoMathExpectation.cs209a.chatting.common.event.meta;
 
+import NoMathExpectation.cs209a.chatting.common.event.MessageEvent;
+import NoMathExpectation.cs209a.chatting.common.event.ProtocolEvent;
+import NoMathExpectation.cs209a.chatting.common.event.ResultEvent;
 import lombok.NonNull;
 
 import java.util.Arrays;

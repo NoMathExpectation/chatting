@@ -2,14 +2,14 @@ package NoMathExpectation.cs209a.chatting.server;
 
 import NoMathExpectation.cs209a.chatting.common.Connector;
 import NoMathExpectation.cs209a.chatting.common.contact.Contact;
-import NoMathExpectation.cs209a.chatting.common.event.Event;
-import NoMathExpectation.cs209a.chatting.common.event.EventManager;
+import NoMathExpectation.cs209a.chatting.common.contact.User;
+import NoMathExpectation.cs209a.chatting.common.event.LoginEvent;
 import NoMathExpectation.cs209a.chatting.common.event.ProtocolEvent;
 import NoMathExpectation.cs209a.chatting.common.event.ResultEvent;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.val;
+import NoMathExpectation.cs209a.chatting.common.event.meta.Event;
+import NoMathExpectation.cs209a.chatting.common.event.meta.EventManager;
+import NoMathExpectation.cs209a.chatting.server.contact.UserImpl;
+import lombok.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -22,9 +22,12 @@ import java.util.UUID;
 public final class ClientConnectorImpl extends Connector {
     private final @NonNull Socket socket;
 
+    @Getter
+    private User user;
+
     @Override
     public Map<UUID, Contact> getContacts() {
-        return ServerConnectorImpl.getInstance().getContacts();
+        return getInstance().getContacts();
     }
 
     @Override
@@ -54,7 +57,7 @@ public final class ClientConnectorImpl extends Connector {
 
         val protocolEvent = EventManager.keyOf(incoming.readUTF()).decode(incoming);
         val hash = EventManager.hash();
-        if (!(protocolEvent instanceof ProtocolEvent && ((ProtocolEvent) protocolEvent).hash != hash)) {
+        if (!(protocolEvent instanceof ProtocolEvent && ((ProtocolEvent) protocolEvent).getHash() != hash)) {
             ResultEvent.key.encode(new ResultEvent(-1, "Protocol mismatch, please update your client."), outgoing);
             outgoing.flush();
             close();
@@ -63,5 +66,24 @@ public final class ClientConnectorImpl extends Connector {
 
         ResultEvent.key.encode(new ResultEvent(0, "Protocol matched."), outgoing);
         outgoing.flush();
+
+        val loginEvent = EventManager.keyOf(incoming.readUTF()).decode(incoming);
+        if (!(loginEvent instanceof LoginEvent)) {
+            ResultEvent.key.encode(new ResultEvent(-2, "You should login before sending events."), outgoing);
+            outgoing.flush();
+            close();
+            return;
+        }
+
+        user = new UserImpl();
+        getContacts().put(user.getId(), user);
+        ResultEvent.key.encode(new ResultEvent(0, user.getId().toString()), outgoing);
+        outgoing.flush();
+
+        while (isConnected()) {
+
+        }
+
+        close();
     }
 }

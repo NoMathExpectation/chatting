@@ -1,38 +1,42 @@
 package NoMathExpectation.cs209a.chatting.common.event;
 
+import NoMathExpectation.cs209a.chatting.common.event.meta.Event;
+import NoMathExpectation.cs209a.chatting.common.event.meta.EventKey;
+import NoMathExpectation.cs209a.chatting.common.event.meta.EventManager;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
+import lombok.Value;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
-@RequiredArgsConstructor
+@Value
 public class ProtocolEvent implements Event {
+    int hash;
+
     public static final EventKey<ProtocolEvent> key = new EventKey<>() {
         @Getter
         private final int version = 0;
 
         @Override
-        public Class<ProtocolEvent> getEventClass() {
+        public @NonNull Class<ProtocolEvent> getEventClass() {
             return ProtocolEvent.class;
         }
 
         @Override
-        public String getId() {
+        public @NonNull String getId() {
             return "ProtocolEvent";
         }
 
         @Override
-        public void encode(ProtocolEvent event, OutputStream stream) throws IOException {
-            ObjectOutputStream outputStream = new ObjectOutputStream(stream);
-            outputStream.writeInt(EventManager.hash());
+        public void encode(@NonNull ProtocolEvent event, @NonNull ObjectOutputStream stream) throws IOException {
+            stream.writeInt(EventManager.hash());
         }
 
         @Override
-        public ProtocolEvent decode(InputStream stream) throws IOException {
-            ObjectInputStream inputStream = new ObjectInputStream(stream);
-            return new ProtocolEvent(inputStream.readInt());
+        public @NonNull ProtocolEvent decode(@NonNull ObjectInputStream stream) throws IOException {
+            return new ProtocolEvent(stream.readInt());
         }
     };
-
-    public final int hash;
 }

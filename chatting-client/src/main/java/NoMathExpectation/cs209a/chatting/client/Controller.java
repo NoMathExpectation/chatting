@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Slf4j
+@Slf4j(topic = "Controller")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Controller implements Initializable {
     @FXML
@@ -128,7 +128,7 @@ public class Controller implements Initializable {
                     nameLabel.setWrapText(true);
                     nameLabel.setStyle("-fx-border-color: black; -fx-border-width: 1px;");
 
-                    if (username.equals(msg.getSentBy())) {
+                    if (username.equals(msg.getSentBy().getName())) {
                         wrapper.setAlignment(Pos.TOP_RIGHT);
                         wrapper.getChildren().addAll(msgLabel, nameLabel);
                         msgLabel.setPadding(new Insets(0, 20, 0, 0));
