@@ -107,6 +107,8 @@ public final class ConnectorImpl extends Connector {
             while (isConnected()) {
                 // TODO: 2023/4/18 transmission
             }
+
+            disconnectedCallback(null, "Disconnected.");
         } catch (Exception e) {
             disconnectedCallback(null, e.getMessage());
         } finally {
