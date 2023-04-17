@@ -1,7 +1,7 @@
-package NoMathExpectation.cs209a.chatting.client;
+package NoMathExpectation.cs209a.chatting.client.gui;
 
 import NoMathExpectation.cs209a.chatting.common.event.MessageEvent;
-import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -12,6 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import lombok.AccessLevel;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -24,30 +25,21 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j(topic = "Controller")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Controller implements Initializable {
+
+    @FXML
+    Label currentOnlineCnt;
+    @FXML
+    Label usernameText;
+    @FXML
+    TextArea inputArea;
     @FXML
     ListView<MessageEvent> chatContentList;
 
     String username;
 
     @Override
+    @SneakyThrows
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
-        val dialog = new TextInputDialog();
-        dialog.setTitle("Login");
-        dialog.setHeaderText(null);
-        dialog.setContentText("Username:");
-
-        val input = dialog.showAndWait();
-        if (input.isPresent() && !input.get().isEmpty()) {
-            /*
-               TODO: Check if there is a user with the same name among the currently logged-in users,
-                     if so, ask the user to change the username
-             */
-            username = input.get();
-        } else {
-            log.warn("Invalid username {}, exiting...", input);
-            Platform.exit();
-        }
 
         chatContentList.setCellFactory(new MessageCellFactory());
     }
@@ -102,6 +94,10 @@ public class Controller implements Initializable {
     @FXML
     public void doSendMessage() {
         // TODO
+    }
+
+    public void showLoginStage(ActionEvent actionEvent) {
+        Login.show();
     }
 
     /**

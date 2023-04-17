@@ -1,5 +1,7 @@
 package NoMathExpectation.cs209a.chatting.client;
 
+import NoMathExpectation.cs209a.chatting.client.gui.Chat;
+import NoMathExpectation.cs209a.chatting.client.gui.Login;
 import NoMathExpectation.cs209a.chatting.common.Connector;
 import NoMathExpectation.cs209a.chatting.common.event.LoginEvent;
 import NoMathExpectation.cs209a.chatting.common.event.ProtocolEvent;
@@ -57,36 +59,61 @@ public final class ConnectorImpl extends Connector {
         return socket.isConnected();
     }
 
+    private static void disconnectedCallback(Event e, @NonNull String defaultReason) {
+        String reason;
+        if (e instanceof ResultEvent) {
+            reason = ((ResultEvent) e).getReason();
+        } else {
+            reason = defaultReason;
+        }
+        Platform.runLater(() -> {
+            if (Login.isLoggingIn()) {
+                Login.loginFailedCallback(reason);
+            } else {
+                Chat.disconnectedCallback(reason);
+            }
+        });
+    }
+
     @Override
     @SneakyThrows
     public void run() {
-        socket.connect(new InetSocketAddress(host, port));
-        this.incoming = new ObjectInputStream(socket.getInputStream());
-        this.outgoing = new ObjectOutputStream(socket.getOutputStream());
+        try {
+            socket.connect(new InetSocketAddress(host, port));
+            this.incoming = new ObjectInputStream(socket.getInputStream());
+            this.outgoing = new ObjectOutputStream(socket.getOutputStream());
 
-        ProtocolEvent.key.encode(new ProtocolEvent(EventManager.hash()), outgoing);
-        outgoing.flush();
-        val resultEvent = EventManager.keyOf(incoming.readUTF()).decode(incoming);
-        if (!(resultEvent instanceof ResultEvent && ((ResultEvent) resultEvent).getResult() == 0)) {
-            Platform.runLater(() -> {
-            }); // TODO: 2023/4/15 pop a dialog
-            socket.close();
-            return;
+            ProtocolEvent.key.encode(new ProtocolEvent(EventManager.hash()), outgoing);
+            outgoing.flush();
+            val resultEvent = EventManager.keyOf(incoming.readUTF()).decode(incoming);
+            if (!(resultEvent instanceof ResultEvent && ((ResultEvent) resultEvent).getResult() == 0)) {
+                disconnectedCallback(resultEvent, "Please update your client.");
+                close();
+                return;
+            }
+
+            LoginEvent.key.encode(new LoginEvent(name), outgoing);
+            outgoing.flush();
+            val resultEvent2 = EventManager.keyOf(incoming.readUTF()).decode(incoming);
+            if (!(resultEvent2 instanceof ResultEvent && ((ResultEvent) resultEvent2).getResult() == 0)) {
+                disconnectedCallback(resultEvent2, "Login Failed.");
+                close();
+                return;
+            }
+
+            id = UUID.fromString(((ResultEvent) resultEvent2).getReason());
+            Platform.runLater(() -> Chat.connectedCallback(host, port, name, id.toString()));
+
+            while (isConnected()) {
+                // TODO: 2023/4/18 transmission
+            }
+        } catch (Exception e) {
+            disconnectedCallback(null, e.getMessage());
+        } finally {
+            try {
+                close();
+            } catch (IOException ignored) {
+            }
         }
-
-        LoginEvent.key.encode(new LoginEvent(name), outgoing);
-        outgoing.flush();
-        val resultEvent2 = EventManager.keyOf(incoming.readUTF()).decode(incoming);
-        if (!(resultEvent2 instanceof ResultEvent && ((ResultEvent) resultEvent2).getResult() == 0)) {
-            Platform.runLater(() -> {
-            }); // TODO: 2023/4/16 pop a dialog
-            socket.close();
-            return;
-        }
-
-        id = UUID.fromString(((ResultEvent) resultEvent2).getReason());
-        Platform.runLater(() -> {
-
-        });
     }
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox alignment="CENTER" prefHeight="200.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="NoMathExpectation.cs209a.chatting.client.gui.Login">
+   <Pane prefHeight="50.0" prefWidth="300.0"/>
+   <HBox alignment="CENTER" prefHeight="20.0">
+      <Label text="Host"/>
+      <Pane prefHeight="23.0" prefWidth="19.0"/>
+      <TextField fx:id="host" alignment="CENTER_RIGHT"/>
+   </HBox>
+   <HBox alignment="CENTER" layoutX="20.0" layoutY="75.0" prefHeight="20.0">
+      <Label text="Port"/>
+      <Pane prefHeight="23.0" prefWidth="22.0"/>
+      <TextField fx:id="port" alignment="CENTER_RIGHT"/>
+   </HBox>
+   <HBox alignment="CENTER" layoutX="20.0" layoutY="86.0" prefHeight="20.0">
+      <Label text="Name"/>
+      <Pane prefHeight="23.0" prefWidth="12.0"/>
+      <TextField fx:id="name" alignment="CENTER_RIGHT"/>
+   </HBox>
+   <Pane prefHeight="40.0" prefWidth="300.0">
+      <Label fx:id="status" alignment="CENTER" contentDisplay="CENTER" layoutX="-1.0" layoutY="6.0" prefHeight="23.0"
+             prefWidth="300.0" textAlignment="CENTER"/>
+   </Pane>
+   <HBox alignment="BASELINE_CENTER" prefHeight="0.0" prefWidth="300.0">
+      <Button fx:id="login" mnemonicParsing="false" onAction="#login" text="Login"/>
+   </HBox>
+</VBox>
