@@ -11,6 +11,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -111,6 +112,16 @@ public class Chat implements Initializable {
 }
 
 class ContactListCell extends ListCell<Contact> {
+    public ContactListCell() {
+        super();
+        setEditable(false);
+        setOnMouseClicked(this::onMouseClick);
+    }
+
+    public void onMouseClick(MouseEvent mouseEvent) {
+
+    }
+
     @Override
     protected void updateItem(Contact contact, boolean empty) {
         super.updateItem(contact, empty);
