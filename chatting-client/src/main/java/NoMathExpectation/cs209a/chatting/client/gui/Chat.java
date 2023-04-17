@@ -7,11 +7,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.AccessLevel;
@@ -21,6 +21,7 @@ import lombok.val;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -55,10 +56,6 @@ public class Chat implements Initializable {
         instance = this;
     }
 
-    public static void show() {
-        stage.show();
-    }
-
     public static void connectedCallback(@NonNull String host, int port, @NonNull String name, @NonNull String id) {
         instance.host = host;
         instance.port = port;
@@ -88,7 +85,7 @@ public class Chat implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        contacts.setCellFactory(param -> new ContactListCell());
     }
 
     @FXML
@@ -110,5 +107,27 @@ public class Chat implements Initializable {
             thread.setDaemon(true);
             thread.start();
         }
+    }
+}
+
+class ContactListCell extends ListCell<Contact> {
+    @Override
+    protected void updateItem(Contact contact, boolean empty) {
+        super.updateItem(contact, empty);
+        if (empty || Objects.isNull(contact)) {
+            return;
+        }
+
+        val hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER_LEFT);
+
+        Label name = new Label(contact.getName());
+        name.setPrefSize(200, 20);
+        name.setPadding(new Insets(0, 20, 0, 0));
+
+        hBox.getChildren().add(name);
+
+        setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        setGraphic(hBox);
     }
 }
