@@ -8,7 +8,7 @@ import lombok.val;
 
 import java.util.Scanner;
 
-@Slf4j
+@Slf4j(topic = "Main")
 public class Main {
     @SneakyThrows
     public static void main(String[] args) {

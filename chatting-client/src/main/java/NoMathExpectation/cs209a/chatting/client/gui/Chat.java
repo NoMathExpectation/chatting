@@ -34,6 +34,7 @@ public class Chat implements Initializable {
 
     static {
         stage.setTitle("Contacts");
+        stage.setResizable(false);
         try {
             stage.setScene(new Scene(new FXMLLoader(Chat.class.getResource("chat.fxml")).load()));
         } catch (IOException e) {

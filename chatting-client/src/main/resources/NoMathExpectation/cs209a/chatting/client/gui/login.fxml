@@ -8,17 +8,17 @@
    <HBox alignment="CENTER" prefHeight="20.0">
       <Label text="Host"/>
       <Pane prefHeight="23.0" prefWidth="19.0"/>
-      <TextField fx:id="host" alignment="CENTER_RIGHT"/>
+      <TextField fx:id="host" alignment="CENTER_RIGHT" onAction="#login"/>
    </HBox>
    <HBox alignment="CENTER" layoutX="20.0" layoutY="75.0" prefHeight="20.0">
       <Label text="Port"/>
       <Pane prefHeight="23.0" prefWidth="22.0"/>
-      <TextField fx:id="port" alignment="CENTER_RIGHT"/>
+      <TextField fx:id="port" alignment="CENTER_RIGHT" onAction="#login"/>
    </HBox>
    <HBox alignment="CENTER" layoutX="20.0" layoutY="86.0" prefHeight="20.0">
       <Label text="Name"/>
       <Pane prefHeight="23.0" prefWidth="12.0"/>
-      <TextField fx:id="name" alignment="CENTER_RIGHT"/>
+      <TextField fx:id="name" alignment="CENTER_RIGHT" onAction="#login"/>
    </HBox>
    <Pane prefHeight="40.0" prefWidth="300.0">
       <Label fx:id="status" alignment="CENTER" contentDisplay="CENTER" layoutX="-1.0" layoutY="6.0" prefHeight="23.0"

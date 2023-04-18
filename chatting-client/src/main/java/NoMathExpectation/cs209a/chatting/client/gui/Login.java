@@ -28,6 +28,7 @@ public class Login implements Initializable {
 
     static {
         stage.setTitle("Login");
+        stage.setResizable(false);
         try {
             stage.setScene(new Scene(new FXMLLoader(Login.class.getResource("login.fxml")).load()));
         } catch (IOException e) {
