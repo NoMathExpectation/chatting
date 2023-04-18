@@ -9,9 +9,9 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public abstract class Connector implements Runnable, Closeable {
@@ -22,7 +22,7 @@ public abstract class Connector implements Runnable, Closeable {
     protected ObjectOutputStream outgoing = null;
 
     @Getter
-    protected Map<UUID, Contact> contacts = new HashMap<>();
+    protected Map<UUID, Contact> contacts = new ConcurrentHashMap<>();
 
     public abstract void sendEvent(@NonNull Event event) throws IOException;
 

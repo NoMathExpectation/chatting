@@ -3,6 +3,7 @@ package NoMathExpectation.cs209a.chatting.client.gui;
 import NoMathExpectation.cs209a.chatting.client.ConnectorImpl;
 import NoMathExpectation.cs209a.chatting.common.Connector;
 import NoMathExpectation.cs209a.chatting.common.contact.Contact;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Chat implements Initializable {
@@ -57,7 +59,7 @@ public class Chat implements Initializable {
         instance = this;
     }
 
-    public static void connectedCallback(@NonNull String host, int port, @NonNull String name, @NonNull String id) {
+    public static void connectedCallback(@NonNull String host, int port, @NonNull String name, @NonNull String id, ObservableList<Contact> contacts) {
         instance.host = host;
         instance.port = port;
 
@@ -65,12 +67,16 @@ public class Chat implements Initializable {
         instance.id.setText(id);
         instance.connectButton.setText("Disconnect");
 
+        instance.contacts.setItems(contacts);
+
         stage.show();
 
         instance.connected = true;
     }
 
     public static void disconnectedCallback(String reason) {
+        instance.contacts.getItems().clear();
+
         instance.id.setText("Disconnected");
         instance.connectButton.setText("Reconnect");
 
@@ -82,6 +88,14 @@ public class Chat implements Initializable {
             alert.initModality(Modality.WINDOW_MODAL);
             alert.show();
         }
+    }
+
+    public static void addContact(@NonNull Contact contact) {
+        instance.contacts.getItems().add(contact);
+    }
+
+    public static void removeContact(@NonNull UUID id) {
+        instance.contacts.getItems().removeIf(contact -> Objects.equals(contact.getId(), id));
     }
 
     @Override

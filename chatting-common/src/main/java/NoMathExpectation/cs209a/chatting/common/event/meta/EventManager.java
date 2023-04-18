@@ -1,15 +1,13 @@
 package NoMathExpectation.cs209a.chatting.common.event.meta;
 
-import NoMathExpectation.cs209a.chatting.common.event.MessageEvent;
-import NoMathExpectation.cs209a.chatting.common.event.ProtocolEvent;
-import NoMathExpectation.cs209a.chatting.common.event.ResultEvent;
+import NoMathExpectation.cs209a.chatting.common.event.*;
 import lombok.NonNull;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EventManager {
+public final class EventManager {
     private static final Map<@NonNull String, @NonNull EventKey<? extends Event>> keyMap = new HashMap<>();
 
     private static final Map<Class<? extends Event>, EventKey<? extends Event>> classEventKeyMap = new HashMap<>();
@@ -38,8 +36,12 @@ public class EventManager {
     }
 
     static {
+        registerEvent(ContactsEvent.key);
+        registerEvent(LoginEvent.key);
+        registerEvent(MessageEvent.key);
         registerEvent(ProtocolEvent.key);
         registerEvent(ResultEvent.key);
-        registerEvent(MessageEvent.key);
+        registerEvent(UserLoginEvent.key);
+        registerEvent(UserLogoutEvent.key);
     }
 }

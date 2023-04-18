@@ -1,18 +1,20 @@
 package NoMathExpectation.cs209a.chatting.client;
 
+import NoMathExpectation.cs209a.chatting.client.contact.Contacts;
 import NoMathExpectation.cs209a.chatting.client.gui.Chat;
 import NoMathExpectation.cs209a.chatting.client.gui.Login;
 import NoMathExpectation.cs209a.chatting.common.Connector;
+import NoMathExpectation.cs209a.chatting.common.contact.Contact;
+import NoMathExpectation.cs209a.chatting.common.event.ContactsEvent;
 import NoMathExpectation.cs209a.chatting.common.event.LoginEvent;
 import NoMathExpectation.cs209a.chatting.common.event.ProtocolEvent;
 import NoMathExpectation.cs209a.chatting.common.event.ResultEvent;
 import NoMathExpectation.cs209a.chatting.common.event.meta.Event;
 import NoMathExpectation.cs209a.chatting.common.event.meta.EventManager;
 import javafx.application.Platform;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.SneakyThrows;
-import lombok.val;
+import javafx.collections.FXCollections;
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,7 +22,9 @@ import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+@Slf4j(topic = "Connector")
 public final class ConnectorImpl extends Connector {
     private final @NonNull String host;
     private final int port;
@@ -41,7 +45,9 @@ public final class ConnectorImpl extends Connector {
     }
 
     @Override
+    @Synchronized
     public void sendEvent(@NonNull Event event) throws IOException {
+        log.info("Sending event to server: {}", event);
         val out = new ObjectOutputStream(outgoing);
         val key = EventManager.keyOf(event);
         out.writeUTF(key.getId());
@@ -59,7 +65,9 @@ public final class ConnectorImpl extends Connector {
         return socket.isConnected();
     }
 
-    private static void disconnectedCallback(Event e, @NonNull String defaultReason) {
+    private static void disconnectedCallback(Event e, String defaultReason) {
+        getInstance().getContacts().clear();
+
         String reason;
         if (e instanceof ResultEvent) {
             reason = ((ResultEvent) e).getReason();
@@ -78,13 +86,19 @@ public final class ConnectorImpl extends Connector {
     @Override
     @SneakyThrows
     public void run() {
+        log.info("Connecting to {}:{} ...", host, port);
+
+        Platform.runLater(() -> Login.setStatusText(""));
+
         try {
             socket.connect(new InetSocketAddress(host, port));
-            this.incoming = new ObjectInputStream(socket.getInputStream());
-            this.outgoing = new ObjectOutputStream(socket.getOutputStream());
 
+            this.outgoing = new ObjectOutputStream(socket.getOutputStream());
+            outgoing.writeUTF(ProtocolEvent.key.getId());
             ProtocolEvent.key.encode(new ProtocolEvent(EventManager.hash()), outgoing);
             outgoing.flush();
+
+            this.incoming = new ObjectInputStream(socket.getInputStream());
             val resultEvent = EventManager.keyOf(incoming.readUTF()).decode(incoming);
             if (!(resultEvent instanceof ResultEvent && ((ResultEvent) resultEvent).getResult() == 0)) {
                 disconnectedCallback(resultEvent, "Please update your client.");
@@ -92,6 +106,7 @@ public final class ConnectorImpl extends Connector {
                 return;
             }
 
+            outgoing.writeUTF(LoginEvent.key.getId());
             LoginEvent.key.encode(new LoginEvent(name), outgoing);
             outgoing.flush();
             val resultEvent2 = EventManager.keyOf(incoming.readUTF()).decode(incoming);
@@ -102,10 +117,26 @@ public final class ConnectorImpl extends Connector {
             }
 
             id = UUID.fromString(((ResultEvent) resultEvent2).getReason());
-            Platform.runLater(() -> Chat.connectedCallback(host, port, name, id.toString()));
+
+            val users = ContactsEvent.key
+                    .decode(incoming)
+                    .getContacts()
+                    .values()
+                    .parallelStream()
+                    .map(Contacts::of)
+                    .collect(Collectors.toMap(Contact::getId, x -> x));
+            getContacts().clear();
+            getContacts().putAll(users);
+
+            Platform.runLater(() -> {
+                Chat.connectedCallback(host, port, name, id.toString(), FXCollections.observableArrayList(users.values()));
+                Login.loginSuccessCallback();
+            });
 
             while (isConnected()) {
-                // TODO: 2023/4/18 transmission
+                val eventName = incoming.readUTF();
+                val key = EventManager.keyOf(eventName);
+                key.decodeAndBroadcast(incoming);
             }
 
             disconnectedCallback(null, "Disconnected.");
@@ -116,6 +147,7 @@ public final class ConnectorImpl extends Connector {
                 close();
             } catch (IOException ignored) {
             }
+            log.info("Disconnected.");
         }
     }
 }

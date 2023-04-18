@@ -58,7 +58,7 @@ public class Login implements Initializable {
         stage.hide();
     }
 
-    public static void setStatusText(@NonNull String s) {
+    public static void setStatusText(String s) {
         instance.status.setText(s);
     }
 
@@ -66,7 +66,7 @@ public class Login implements Initializable {
         hide();
     }
 
-    public static void loginFailedCallback(@NonNull String reason) {
+    public static void loginFailedCallback(String reason) {
         setStatusText(reason);
         instance.login.setDisable(false);
     }
