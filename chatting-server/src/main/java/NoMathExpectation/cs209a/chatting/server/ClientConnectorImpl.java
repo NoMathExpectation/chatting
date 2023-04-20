@@ -2,10 +2,12 @@ package NoMathExpectation.cs209a.chatting.server;
 
 import NoMathExpectation.cs209a.chatting.common.Connector;
 import NoMathExpectation.cs209a.chatting.common.contact.Contact;
+import NoMathExpectation.cs209a.chatting.common.contact.Group;
 import NoMathExpectation.cs209a.chatting.common.contact.User;
 import NoMathExpectation.cs209a.chatting.common.event.*;
 import NoMathExpectation.cs209a.chatting.common.event.meta.Event;
 import NoMathExpectation.cs209a.chatting.common.event.meta.EventManager;
+import NoMathExpectation.cs209a.chatting.server.contact.GroupImpl;
 import NoMathExpectation.cs209a.chatting.server.contact.UserImpl;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +36,19 @@ public final class ClientConnectorImpl extends Connector {
     @Override
     @Synchronized
     public void sendEvent(@NonNull Event event) throws IOException {
-        log.info("Sending event to client {}: {}", user.getId(), event);
+        log.info("Sending event to client {}: {}", socket.getRemoteSocketAddress(), event);
         val key = EventManager.keyOf(event);
         outgoing.writeUTF(key.getId());
         key.encode(event, outgoing);
         outgoing.flush();
+    }
+
+    public @NonNull User newUser(@NonNull UUID id, @NonNull String name) {
+        return new UserImpl(this, id, name);
+    }
+
+    public @NonNull Group newGroup(@NonNull UUID id, @NonNull String name) {
+        return new GroupImpl(id, name);
     }
 
     @Override
@@ -61,34 +71,32 @@ public final class ClientConnectorImpl extends Connector {
 
             this.outgoing = new ObjectOutputStream(socket.getOutputStream());
             if (!(protocolEvent instanceof ProtocolEvent && ((ProtocolEvent) protocolEvent).getHash() == hash)) {
-                ResultEvent.key.encode(new ResultEvent(-1, "Protocol mismatch, please update your client."), outgoing);
-                outgoing.flush();
+                sendEvent(new ResultEvent(-1, "Protocol mismatch, please update your client."));
                 close();
                 return;
             }
-            outgoing.writeUTF(ResultEvent.key.getId());
-            ResultEvent.key.encode(new ResultEvent(0, "Protocol matched."), outgoing);
-            outgoing.flush();
+            sendEvent(new ResultEvent(0, "Protocol matched."));
 
             val loginEvent = EventManager.keyOf(incoming.readUTF()).decode(incoming);
             if (!(loginEvent instanceof LoginEvent)) {
-                ResultEvent.key.encode(new ResultEvent(-2, "You should login before sending events."), outgoing);
-                outgoing.flush();
+                sendEvent(new ResultEvent(-2, "You should login before sending events."));
+                close();
+                return;
+            }
+            if (getContacts().values().parallelStream().anyMatch(x -> x.getName().equals(((LoginEvent) loginEvent).getName()))) {
+                sendEvent(new ResultEvent(-3, "There is already a user named " + ((LoginEvent) loginEvent).getName() + "."));
                 close();
                 return;
             }
 
             user = new UserImpl(this, ((LoginEvent) loginEvent).getName());
-            outgoing.writeUTF(ResultEvent.key.getId());
-            ResultEvent.key.encode(new ResultEvent(0, user.getId().toString()), outgoing);
-            outgoing.flush();
+            sendEvent(new ResultEvent(0, user.getId().toString()));
 
-            val users = contacts.values()
+            val users = getContacts().values()
                     .parallelStream()
                     .filter(x -> x instanceof User)
                     .collect(Collectors.toMap(Contact::getId, x -> x));
-            ContactsEvent.key.encode(new ContactsEvent(users), outgoing);
-            outgoing.flush();
+            sendEvent(new ContactsEvent(users));
 
             getContacts().put(user.getId(), user);
             UserLoginEvent.key.broadcast(new UserLoginEvent(user.getId(), user.getName()));
@@ -101,7 +109,7 @@ public final class ClientConnectorImpl extends Connector {
                 key.decodeAndBroadcast(incoming);
             }
         } catch (Exception e) {
-            log.error("Exception thrown when handling client connection from " + socket.getRemoteSocketAddress(), e);
+            log.debug("Exception thrown when handling client connection from " + socket.getRemoteSocketAddress(), e);
         } finally {
             try {
                 close();

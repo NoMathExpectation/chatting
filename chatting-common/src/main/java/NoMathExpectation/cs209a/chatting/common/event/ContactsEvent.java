@@ -1,5 +1,6 @@
 package NoMathExpectation.cs209a.chatting.common.event;
 
+import NoMathExpectation.cs209a.chatting.common.Connector;
 import NoMathExpectation.cs209a.chatting.common.contact.Contact;
 import NoMathExpectation.cs209a.chatting.common.contact.Group;
 import NoMathExpectation.cs209a.chatting.common.contact.User;
@@ -70,10 +71,10 @@ public class ContactsEvent implements Event {
 
                 switch (type) {
                     case "User":
-                        contacts.put(uuid, new User(uuid, name));
+                        contacts.put(uuid, Connector.getInstance().newUser(uuid, name));
                         break;
                     case "Group":
-                        contacts.put(uuid, new Group(uuid, name));
+                        contacts.put(uuid, Connector.getInstance().newGroup(uuid, name));
                         break;
                     default:
                         throw new IllegalArgumentException("Unknown contact type: " + type);

@@ -2,17 +2,17 @@ package NoMathExpectation.cs209a.chatting.client.contact;
 
 import NoMathExpectation.cs209a.chatting.client.ConnectorImpl;
 import NoMathExpectation.cs209a.chatting.common.Connector;
-import NoMathExpectation.cs209a.chatting.common.contact.User;
+import NoMathExpectation.cs209a.chatting.common.contact.Group;
 import NoMathExpectation.cs209a.chatting.common.event.MessageEvent;
-import lombok.*;
+import lombok.NonNull;
+import lombok.SneakyThrows;
+import lombok.val;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@ToString
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-public class UserImpl extends User {
-    public UserImpl(@NonNull UUID id, @NonNull String name) {
+public class GroupImpl extends Group {
+    public GroupImpl(@NonNull UUID id, @NonNull String name) {
         super(id, name);
     }
 

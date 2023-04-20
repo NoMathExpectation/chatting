@@ -1,6 +1,8 @@
 package NoMathExpectation.cs209a.chatting.common;
 
 import NoMathExpectation.cs209a.chatting.common.contact.Contact;
+import NoMathExpectation.cs209a.chatting.common.contact.Group;
+import NoMathExpectation.cs209a.chatting.common.contact.User;
 import NoMathExpectation.cs209a.chatting.common.event.meta.Event;
 import lombok.Getter;
 import lombok.NonNull;
@@ -25,6 +27,10 @@ public abstract class Connector implements Runnable, Closeable {
     protected Map<UUID, Contact> contacts = new ConcurrentHashMap<>();
 
     public abstract void sendEvent(@NonNull Event event) throws IOException;
+
+    public abstract User newUser(@NonNull UUID id, @NonNull String name);
+
+    public abstract Group newGroup(@NonNull UUID id, @NonNull String name);
 
     @Getter
     protected boolean connected = false;

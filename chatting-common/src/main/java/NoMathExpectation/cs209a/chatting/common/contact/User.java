@@ -8,13 +8,8 @@ import java.util.UUID;
 
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-public class User extends Contact {
+public abstract class User extends Contact {
     public User(@NonNull UUID id, @NonNull String name) {
         super(id, name);
-    }
-
-    @Override
-    public void sendMessage(String message) {
-        throw new UnsupportedOperationException("This is a data only instance.");
     }
 }

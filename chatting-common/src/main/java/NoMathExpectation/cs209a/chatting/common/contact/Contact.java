@@ -1,5 +1,6 @@
 package NoMathExpectation.cs209a.chatting.common.contact;
 
+import NoMathExpectation.cs209a.chatting.common.event.MessageEvent;
 import lombok.*;
 
 import java.util.UUID;
@@ -20,5 +21,7 @@ public abstract class Contact {
         this(UUID.randomUUID(), name);
     }
 
-    public abstract void sendMessage(String message);
+    public abstract void sendMessage(MessageEvent messageEvent);
+
+    public abstract @NonNull MessageEvent sendMessage(String message);
 }

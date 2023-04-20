@@ -2,7 +2,10 @@ package NoMathExpectation.cs209a.chatting.server;
 
 import NoMathExpectation.cs209a.chatting.common.Connector;
 import NoMathExpectation.cs209a.chatting.common.contact.Contact;
+import NoMathExpectation.cs209a.chatting.common.contact.Group;
+import NoMathExpectation.cs209a.chatting.common.contact.User;
 import NoMathExpectation.cs209a.chatting.common.event.meta.Event;
+import NoMathExpectation.cs209a.chatting.server.contact.GroupImpl;
 import NoMathExpectation.cs209a.chatting.server.contact.UserImpl;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -12,6 +15,7 @@ import lombok.val;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 @Slf4j(topic = "ServerConnector")
@@ -43,6 +47,14 @@ public final class ServerConnectorImpl extends Connector {
                         log.error("Error while sending event " + event + " to user " + contact + " : ", e);
                     }
                 });
+    }
+
+    public @NonNull User newUser(@NonNull UUID id, @NonNull String name) {
+        throw new UnsupportedOperationException("Users cannot be created without client.");
+    }
+
+    public @NonNull Group newGroup(@NonNull UUID id, @NonNull String name) {
+        return new GroupImpl(id, name);
     }
 
     @Override

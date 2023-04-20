@@ -1,11 +1,9 @@
 package NoMathExpectation.cs209a.chatting.server.contact;
 
 import NoMathExpectation.cs209a.chatting.common.contact.User;
+import NoMathExpectation.cs209a.chatting.common.event.MessageEvent;
 import NoMathExpectation.cs209a.chatting.server.ClientConnectorImpl;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -24,12 +22,14 @@ public class UserImpl extends User {
         this(client, UUID.randomUUID(), name);
     }
 
-    public UserImpl(@NonNull ClientConnectorImpl client, @NonNull User user) {
-        this(client, user.getId(), user.getName());
+    @Override
+    @SneakyThrows
+    public void sendMessage(MessageEvent messageEvent) {
+        client.sendEvent(messageEvent);
     }
 
     @Override
-    public void sendMessage(String message) {
-
+    public @NonNull MessageEvent sendMessage(String message) {
+        throw new UnsupportedOperationException("Server itself cannot send message.");
     }
 }
