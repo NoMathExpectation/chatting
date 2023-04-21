@@ -83,6 +83,11 @@ public final class ClientConnectorImpl extends Connector {
                 close();
                 return;
             }
+            if (((LoginEvent) loginEvent).getName().isBlank()) {
+                sendEvent(new ResultEvent(-3, "Name must not be blank."));
+                close();
+                return;
+            }
             if (getContacts().values().parallelStream().anyMatch(x -> x.getName().equals(((LoginEvent) loginEvent).getName()))) {
                 sendEvent(new ResultEvent(-3, "There is already a user named " + ((LoginEvent) loginEvent).getName() + "."));
                 close();
@@ -121,7 +126,11 @@ public final class ClientConnectorImpl extends Connector {
                 UserLogoutEvent.key.broadcast(new UserLogoutEvent(user.getId()));
             }
 
-            log.info("Client from {} with name {}, uuid {} disconnected.", socket.getRemoteSocketAddress(), user.getName(), user.getId());
+            if (user == null) {
+                log.info("Client from {} disconnected.", socket.getRemoteSocketAddress());
+            } else {
+                log.info("Client from {} with name {}, uuid {} disconnected.", socket.getRemoteSocketAddress(), user.getName(), user.getId());
+            }
         }
     }
 }

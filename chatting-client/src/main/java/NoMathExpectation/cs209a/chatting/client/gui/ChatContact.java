@@ -24,6 +24,10 @@ import lombok.val;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -45,7 +49,7 @@ public class ChatContact implements Initializable {
     @FXML
     Menu manageMenu;
     @FXML
-    Menu chatMenu;
+    Menu emojiMenu;
     @FXML
     ListView<User> members;
     @FXML
@@ -97,7 +101,7 @@ public class ChatContact implements Initializable {
     public void setOffline() {
         sendButton.setDisable(true);
         manageMenu.setDisable(true);
-        chatMenu.setDisable(true);
+        emojiMenu.setDisable(true);
         input.setEditable(false);
         input.setText("Contact is offline.");
     }
@@ -108,7 +112,7 @@ public class ChatContact implements Initializable {
 
     @FXML
     void sendMessage(ActionEvent actionEvent) {
-        if (Connector.getInstance().getContacts().get(contact.getId()) == null) {
+        if (input.getText().isBlank() || Connector.getInstance().getContacts().get(contact.getId()) == null) {
             return;
         }
 
@@ -118,6 +122,61 @@ public class ChatContact implements Initializable {
         } catch (Exception e) {
             log.error("Message send failed to contact " + contact, e);
         }
+    }
+
+    @FXML
+    void addSmileEmoji() {
+        input.appendText("\uD83D\uDE42");
+    }
+
+    @FXML
+    void addLaughEmoji() {
+        input.appendText("\uD83D\uDE01");
+    }
+
+    @FXML
+    void addUnhappyEmoji() {
+        input.appendText("\uD83D\uDE41");
+    }
+
+    @FXML
+    void addSleepingEmoji() {
+        input.appendText("\uD83D\uDE34");
+    }
+
+    @FXML
+    void addSadEmoji() {
+        input.appendText("\uD83D\uDE2D");
+    }
+
+    @FXML
+    void addWinkEmoji() {
+        input.appendText("\uD83D\uDE09");
+    }
+
+    @FXML
+    void addCoolEmoji() {
+        input.appendText("\uD83D\uDE0E");
+    }
+
+    @FXML
+    void addCryEmoji() {
+        input.appendText("\uD83D\uDE2D");
+    }
+
+    @FXML
+    void addAngryEmoji() {
+        input.appendText("\uD83D\uDE20");
+    }
+
+    @FXML
+    void addScaryEmoji() {
+        input.appendText("\uD83D\uDE28");
+    }
+
+    @FXML
+    void addUnbengableEmoji() {
+        input.appendText("\uD83D\uDE05");
     }
 }
 
@@ -135,10 +194,13 @@ class MessageCell extends ListCell<MessageEvent> {
         }
 
         HBox wrapper = new HBox();
-        Label nameLabel = new Label(msg.getSentBy().getName());
+        Label nameLabel = new Label(msg.getSentBy().getName() + " " + LocalDateTime.ofInstant(msg.getTime(), ZoneId.systemDefault()).format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
         Label msgLabel = new Label(msg.getMessage());
 
-        nameLabel.setPrefSize(50, 20);
+        nameLabel.setPrefHeight(20);
+        nameLabel.setMinWidth(200);
+        nameLabel.setMaxWidth(400);
+        nameLabel.setAlignment(Pos.CENTER);
         nameLabel.setWrapText(true);
         nameLabel.setStyle("-fx-border-color: black; -fx-border-width: 1px;");
 
