@@ -69,8 +69,8 @@ public final class ConnectorImpl extends Connector {
         return new UserImpl(id, name);
     }
 
-    public @NonNull Group newGroup(@NonNull UUID id, @NonNull String name) {
-        return new GroupImpl(id, name);
+    public @NonNull Group newGroup(@NonNull UUID id, @NonNull String name, @NonNull User owner) {
+        return new GroupImpl(id, name, owner);
     }
 
     @Override

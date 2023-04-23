@@ -51,6 +51,7 @@ public class ContactsEvent implements Event {
                     }
                     if (contact instanceof Group) {
                         stream.writeUTF("Group");
+                        stream.writeUTF(((Group) contact).getOwner().getId().toString());
                         return;
                     }
                     throw new IllegalArgumentException("Unknown contact type: " + contact.getClass().getName());
@@ -62,6 +63,8 @@ public class ContactsEvent implements Event {
 
         @Override
         public @NonNull ContactsEvent decode(@NonNull ObjectInputStream stream) throws IOException {
+            val connector = Connector.getInstance();
+
             val count = stream.readInt();
             val contacts = new HashMap<UUID, Contact>(count);
             for (int i = 0; i < count; i++) {
@@ -71,10 +74,15 @@ public class ContactsEvent implements Event {
 
                 switch (type) {
                     case "User":
-                        contacts.put(uuid, Connector.getInstance().newUser(uuid, name));
+                        contacts.put(uuid, connector.newUser(uuid, name));
                         break;
                     case "Group":
-                        contacts.put(uuid, Connector.getInstance().newGroup(uuid, name));
+                        val owner = connector.getContacts().get(UUID.fromString(stream.readUTF()));
+                        if (!(owner instanceof User)) {
+                            throw new IllegalArgumentException("Group owner is not a user.");
+                        }
+
+                        contacts.put(uuid, connector.newGroup(uuid, name, (User) owner));
                         break;
                     default:
                         throw new IllegalArgumentException("Unknown contact type: " + type);

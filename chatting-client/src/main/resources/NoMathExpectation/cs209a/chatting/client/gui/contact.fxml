@@ -7,6 +7,7 @@
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="NoMathExpectation.cs209a.chatting.client.gui.ChatContact">
     <MenuBar VBox.vgrow="NEVER">
         <Menu fx:id="manageMenu" mnemonicParsing="false" text="Manage">
+            <MenuItem mnemonicParsing="false" onAction="#callInvite" text="Invite"/>
         </Menu>
         <Menu fx:id="emojiMenu" mnemonicParsing="false" text="Emojis">
             <MenuItem mnemonicParsing="false" onAction="#addSmileEmoji" text="Smile"/>

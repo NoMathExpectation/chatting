@@ -7,7 +7,7 @@ import lombok.*;
 
 import java.util.UUID;
 
-@ToString
+@ToString(callSuper = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class UserImpl extends User {
     @Getter

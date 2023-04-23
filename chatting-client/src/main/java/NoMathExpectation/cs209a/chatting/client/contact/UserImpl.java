@@ -9,7 +9,7 @@ import lombok.*;
 import java.time.Instant;
 import java.util.UUID;
 
-@ToString
+@ToString(callSuper = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class UserImpl extends User {
     public UserImpl(@NonNull UUID id, @NonNull String name) {

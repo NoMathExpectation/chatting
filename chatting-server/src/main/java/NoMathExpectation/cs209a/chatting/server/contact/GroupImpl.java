@@ -3,14 +3,18 @@ package NoMathExpectation.cs209a.chatting.server.contact;
 import NoMathExpectation.cs209a.chatting.common.contact.Group;
 import NoMathExpectation.cs209a.chatting.common.contact.User;
 import NoMathExpectation.cs209a.chatting.common.event.MessageEvent;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import lombok.ToString;
 
 import java.util.UUID;
 
+@ToString(callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class GroupImpl extends Group {
-    public GroupImpl(@NonNull UUID id, @NonNull String name) {
-        super(id, name);
+    public GroupImpl(@NonNull UUID id, @NonNull String name, @NonNull User owner) {
+        super(id, name, owner);
     }
 
     @Override

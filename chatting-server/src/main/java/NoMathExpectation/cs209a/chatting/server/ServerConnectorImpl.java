@@ -53,8 +53,8 @@ public final class ServerConnectorImpl extends Connector {
         throw new UnsupportedOperationException("Users cannot be created without client.");
     }
 
-    public @NonNull Group newGroup(@NonNull UUID id, @NonNull String name) {
-        return new GroupImpl(id, name);
+    public @NonNull Group newGroup(@NonNull UUID id, @NonNull String name, @NonNull User owner) {
+        return new GroupImpl(id, name, owner);
     }
 
     @Override

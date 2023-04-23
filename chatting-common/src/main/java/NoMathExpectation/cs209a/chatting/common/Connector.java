@@ -30,7 +30,7 @@ public abstract class Connector implements Runnable, Closeable {
 
     public abstract User newUser(@NonNull UUID id, @NonNull String name);
 
-    public abstract Group newGroup(@NonNull UUID id, @NonNull String name);
+    public abstract Group newGroup(@NonNull UUID id, @NonNull String name, @NonNull User owner);
 
     @Getter
     protected boolean connected = false;

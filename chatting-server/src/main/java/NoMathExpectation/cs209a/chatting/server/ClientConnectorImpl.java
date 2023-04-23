@@ -47,8 +47,8 @@ public final class ClientConnectorImpl extends Connector {
         return new UserImpl(this, id, name);
     }
 
-    public @NonNull Group newGroup(@NonNull UUID id, @NonNull String name) {
-        return new GroupImpl(id, name);
+    public @NonNull Group newGroup(@NonNull UUID id, @NonNull String name, @NonNull User owner) {
+        return new GroupImpl(id, name, owner);
     }
 
     @Override
@@ -114,7 +114,7 @@ public final class ClientConnectorImpl extends Connector {
                 key.decodeAndBroadcast(incoming);
             }
         } catch (Exception e) {
-            log.debug("Exception thrown when handling client connection from " + socket.getRemoteSocketAddress(), e);
+            //log.debug("Exception thrown when handling client connection from " + socket.getRemoteSocketAddress(), e);
         } finally {
             try {
                 close();
@@ -124,6 +124,16 @@ public final class ClientConnectorImpl extends Connector {
             if (user != null) {
                 getContacts().remove(user.getId());
                 UserLogoutEvent.key.broadcast(new UserLogoutEvent(user.getId()));
+                getContacts().forEach((uuid, contact) -> {
+                    if (contact instanceof Group) {
+                        ((Group) contact).getMembers().remove(user);
+                    }
+                });
+                getContacts().forEach((uuid, contact) -> {
+                    if (contact instanceof Group && ((Group) contact).getMembers().isEmpty()) {
+                        getContacts().remove(contact.getId());
+                    }
+                });
             }
 
             if (user == null) {

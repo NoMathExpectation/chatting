@@ -9,14 +9,13 @@
       fx:controller="NoMathExpectation.cs209a.chatting.client.gui.Chat">
     <MenuBar>
         <Menu mnemonicParsing="false" text="Chat">
-            <MenuItem mnemonicParsing="false" onAction="#callCreateNewGroup" text="New Group"/>
+            <MenuItem fx:id="newGroupButton" mnemonicParsing="false" onAction="#callCreateNewGroup" text="New Group"/>
         </Menu>
         <Menu mnemonicParsing="false" text="Connect">
             <MenuItem fx:id="connectButton" mnemonicParsing="false" onAction="#callConnectButton" text="Disconnect"/>
         </Menu>
     </MenuBar>
     <AnchorPane prefHeight="50.0">
-        <VBox alignment="CENTER"/>
         <Label fx:id="name" layoutX="10.0" layoutY="4.0" text="Your Name">
             <font>
                 <Font size="15.0"/>

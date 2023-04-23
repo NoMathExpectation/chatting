@@ -3,6 +3,7 @@ package NoMathExpectation.cs209a.chatting.client.gui;
 import NoMathExpectation.cs209a.chatting.client.ConnectorImpl;
 import NoMathExpectation.cs209a.chatting.common.Connector;
 import NoMathExpectation.cs209a.chatting.common.contact.Contact;
+import NoMathExpectation.cs209a.chatting.common.contact.Group;
 import NoMathExpectation.cs209a.chatting.common.contact.User;
 import NoMathExpectation.cs209a.chatting.common.event.MessageEvent;
 import javafx.event.ActionEvent;
@@ -28,16 +29,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Map;
-import java.util.Objects;
-import java.util.ResourceBundle;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Slf4j(topic = "ChatContact")
 public class ChatContact implements Initializable {
-    static Map<UUID, ChatContact> chatContacts = new ConcurrentHashMap<>();
+    private static Map<UUID, ChatContact> chatContacts = new ConcurrentHashMap<>();
 
     @FXML
     Button sendButton;
@@ -51,7 +49,7 @@ public class ChatContact implements Initializable {
     @FXML
     Menu emojiMenu;
     @FXML
-    ListView<User> members;
+    ListView<Contact> members;
     @FXML
     ListView<MessageEvent> messages;
     @FXML
@@ -62,9 +60,10 @@ public class ChatContact implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         messages.setCellFactory(param -> new MessageCell());
+        members.setCellFactory(param -> new ContactListCell());
     }
 
-    void init(@NonNull Contact contact, @NonNull Stage stage) {
+    private void init(@NonNull Contact contact, @NonNull Stage stage) {
         this.contact = contact;
         this.stage = stage;
 
@@ -81,8 +80,12 @@ public class ChatContact implements Initializable {
         return chatContacts.computeIfAbsent(contact.getId(), id -> {
             val loader = new FXMLLoader(ChatContact.class.getResource("contact.fxml"));
             val stage = new Stage();
-            stage.setTitle("Chatting with " + contact.getName());
-            stage.initOwner(Chat.stage);
+            if (contact instanceof Group) {
+                stage.setTitle("Chatting in " + contact.getName());
+            } else {
+                stage.setTitle("Chatting with " + contact.getName());
+            }
+            stage.initOwner(Chat.getStage());
             try {
                 stage.setScene(new Scene(loader.load()));
             } catch (IOException e) {
@@ -92,6 +95,14 @@ public class ChatContact implements Initializable {
             chatContact.init(contact, stage);
             return chatContact;
         });
+    }
+
+    public void addMembers(@NonNull List<? extends Contact> members) {
+        this.members.getItems().addAll(members);
+    }
+
+    public void removeMember(@NonNull UUID id) {
+        members.getItems().removeIf(contact -> contact.getId().equals(id));
     }
 
     public void addMessage(@NonNull MessageEvent messageEvent) {
@@ -104,6 +115,12 @@ public class ChatContact implements Initializable {
         emojiMenu.setDisable(true);
         input.setEditable(false);
         input.setText("Contact is offline.");
+
+        chatContacts.forEach((id, chatContact) -> {
+            if (chatContact.getContact() instanceof Group) {
+                chatContact.removeMember(contact.getId());
+            }
+        });
     }
 
     public static void setAllOffline() {
@@ -111,13 +128,16 @@ public class ChatContact implements Initializable {
     }
 
     @FXML
-    void sendMessage(ActionEvent actionEvent) {
+    private void sendMessage(ActionEvent actionEvent) {
         if (input.getText().isBlank() || Connector.getInstance().getContacts().get(contact.getId()) == null) {
             return;
         }
 
         try {
-            addMessage(contact.sendMessage(input.getText()));
+            val messageEvent = contact.sendMessage(input.getText());
+            if (contact instanceof User) {
+                addMessage(messageEvent);
+            }
             input.clear();
         } catch (Exception e) {
             log.error("Message send failed to contact " + contact, e);
@@ -125,57 +145,66 @@ public class ChatContact implements Initializable {
     }
 
     @FXML
-    void addSmileEmoji() {
+    private void callInvite(ActionEvent actionEvent) {
+        if (!(contact instanceof Group)) {
+            return;
+        }
+
+        GroupInvite.of((Group) contact).show();
+    }
+
+    @FXML
+    private void addSmileEmoji() {
         input.appendText("\uD83D\uDE42");
     }
 
     @FXML
-    void addLaughEmoji() {
+    private void addLaughEmoji() {
         input.appendText("\uD83D\uDE01");
     }
 
     @FXML
-    void addUnhappyEmoji() {
+    private void addUnhappyEmoji() {
         input.appendText("\uD83D\uDE41");
     }
 
     @FXML
-    void addSleepingEmoji() {
+    private void addSleepingEmoji() {
         input.appendText("\uD83D\uDE34");
     }
 
     @FXML
-    void addSadEmoji() {
+    private void addSadEmoji() {
         input.appendText("\uD83D\uDE2D");
     }
 
     @FXML
-    void addWinkEmoji() {
+    private void addWinkEmoji() {
         input.appendText("\uD83D\uDE09");
     }
 
     @FXML
-    void addCoolEmoji() {
+    private void addCoolEmoji() {
         input.appendText("\uD83D\uDE0E");
     }
 
     @FXML
-    void addCryEmoji() {
+    private void addCryEmoji() {
         input.appendText("\uD83D\uDE2D");
     }
 
     @FXML
-    void addAngryEmoji() {
+    private void addAngryEmoji() {
         input.appendText("\uD83D\uDE20");
     }
 
     @FXML
-    void addScaryEmoji() {
+    private void addScaryEmoji() {
         input.appendText("\uD83D\uDE28");
     }
 
     @FXML
-    void addUnbengableEmoji() {
+    private void addUnbengableEmoji() {
         input.appendText("\uD83D\uDE05");
     }
 }

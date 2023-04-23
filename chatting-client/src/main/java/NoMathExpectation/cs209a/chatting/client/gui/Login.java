@@ -23,8 +23,8 @@ import java.util.ResourceBundle;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Login implements Initializable {
     @Getter
-    static Login instance;
-    static @NonNull Stage stage = new Stage();
+    private static Login instance;
+    private static final @NonNull Stage stage = new Stage();
 
     static {
         stage.setTitle("Login");
@@ -48,6 +48,10 @@ public class Login implements Initializable {
     Button login;
 
     public Login() {
+        if (instance != null) {
+            throw new IllegalStateException("Login already initialized.");
+        }
+
         instance = this;
     }
 

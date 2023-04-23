@@ -37,6 +37,8 @@ public final class EventManager {
 
     static {
         registerEvent(ContactsEvent.key);
+        registerEvent(GroupCreateEvent.key);
+        registerEvent(GroupInviteEvent.key);
         registerEvent(LoginEvent.key);
         registerEvent(MessageEvent.key);
         registerEvent(ProtocolEvent.key);

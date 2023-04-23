@@ -6,7 +6,7 @@ import lombok.ToString;
 
 import java.util.UUID;
 
-@ToString
+@ToString(callSuper = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public abstract class User extends Contact {
     public User(@NonNull UUID id, @NonNull String name) {

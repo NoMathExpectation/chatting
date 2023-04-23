@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+      prefWidth="260.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="NoMathExpectation.cs209a.chatting.client.gui.GroupInvite">
+    <Label layoutX="10.0" layoutY="28.0" prefHeight="50.0" text="Select users to invite to group.">
+        <font>
+            <Font size="15.0"/>
+        </font>
+        <padding>
+            <Insets left="10.0"/>
+        </padding>
+    </Label>
+    <ListView fx:id="users"/>
+    <AnchorPane prefHeight="80.0">
+        <Button alignment="CENTER" layoutX="107.0" layoutY="3.0" mnemonicParsing="false" onAction="#callInvite"
+                text="Done"/>
+    </AnchorPane>
+</VBox>

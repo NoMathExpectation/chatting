@@ -9,13 +9,18 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@ToString
+@ToString(callSuper = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public abstract class Group extends Contact {
     @Getter
-    protected List<User> members = new CopyOnWriteArrayList<>();
+    protected @NonNull User owner;
 
-    public Group(@NonNull UUID id, @NonNull String name) {
+    @Getter
+    protected final List<User> members = new CopyOnWriteArrayList<>();
+
+    public Group(@NonNull UUID id, @NonNull String name, @NonNull User owner) {
         super(id, name);
+        this.owner = owner;
+        members.add(owner);
     }
 }

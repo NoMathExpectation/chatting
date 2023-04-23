@@ -3,21 +3,21 @@ package NoMathExpectation.cs209a.chatting.client.gui;
 import NoMathExpectation.cs209a.chatting.client.ConnectorImpl;
 import NoMathExpectation.cs209a.chatting.common.Connector;
 import NoMathExpectation.cs209a.chatting.common.contact.Contact;
+import NoMathExpectation.cs209a.chatting.common.event.GroupCreateEvent;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.io.IOException;
@@ -26,10 +26,12 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
+@Slf4j(topic = "Chat")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Chat implements Initializable {
-    static Chat instance;
-    static @NonNull Stage stage = new Stage();
+    private static Chat instance;
+    @Getter
+    private static final @NonNull Stage stage = new Stage();
 
     static {
         stage.setTitle("Contacts");
@@ -41,6 +43,8 @@ public class Chat implements Initializable {
         }
     }
 
+    @FXML
+    MenuItem newGroupButton;
     @FXML
     MenuItem connectButton;
     @FXML
@@ -56,6 +60,10 @@ public class Chat implements Initializable {
     boolean connected = true;
 
     public Chat() {
+        if (instance != null) {
+            throw new IllegalStateException("Chat already initialized.");
+        }
+
         instance = this;
     }
 
@@ -69,6 +77,8 @@ public class Chat implements Initializable {
 
         instance.contacts.setItems(contacts);
 
+        instance.newGroupButton.setDisable(false);
+
         stage.show();
 
         instance.connected = true;
@@ -76,6 +86,8 @@ public class Chat implements Initializable {
 
     public static void disconnectedCallback(String reason) {
         instance.contacts.getItems().clear();
+
+        instance.newGroupButton.setDisable(true);
 
         instance.id.setText("Disconnected");
         instance.connectButton.setText("Reconnect");
@@ -104,12 +116,45 @@ public class Chat implements Initializable {
     }
 
     @FXML
-    void callCreateNewGroup(ActionEvent actionEvent) {
-        // TODO: 2023/4/17 create a new group
+    private void callCreateNewGroup(ActionEvent actionEvent) {
+        if (!instance.connected) {
+            return;
+        }
+
+        val inputDialog = new TextInputDialog();
+        inputDialog.initOwner(stage);
+        inputDialog.initModality(Modality.WINDOW_MODAL);
+        inputDialog.setTitle("Create new group");
+        inputDialog.setHeaderText("Create new group");
+        inputDialog.setContentText("Please enter group name:");
+
+        String result;
+        do {
+            inputDialog.showAndWait();
+
+            result = inputDialog.getResult();
+            if (result == null) {
+                return;
+            }
+            if (result.isBlank()) {
+                inputDialog.setContentText("Group name cannot be blank.");
+            }
+        } while (result.isBlank());
+
+        val connector = ConnectorImpl.getClientInstance();
+        try {
+            connector.sendEvent(new GroupCreateEvent(result, connector.getUser()));
+        } catch (IOException e) {
+            log.error("Failed to create group.", e);
+            val alert = new Alert(Alert.AlertType.ERROR, "Failed to create group.");
+            alert.initOwner(stage);
+            alert.initModality(Modality.WINDOW_MODAL);
+            alert.show();
+        }
     }
 
     @FXML
-    void callConnectButton(ActionEvent actionEvent) {
+    private void callConnectButton(ActionEvent actionEvent) {
         if (connected) {
             try {
                 Connector.getInstance().close();
@@ -122,39 +167,5 @@ public class Chat implements Initializable {
             thread.setDaemon(true);
             thread.start();
         }
-    }
-}
-
-class ContactListCell extends ListCell<Contact> {
-    public ContactListCell() {
-        super();
-        setEditable(false);
-    }
-
-    @Override
-    protected void updateItem(Contact contact, boolean empty) {
-        super.updateItem(contact, empty);
-        if (empty || Objects.isNull(contact)) {
-            getChildren().clear();
-            return;
-        }
-
-        val hBox = new HBox();
-        hBox.setAlignment(Pos.CENTER_LEFT);
-
-        Label name = new Label(contact.getName());
-        name.setPrefSize(200, 20);
-        name.setPadding(new Insets(0, 20, 0, 0));
-
-        hBox.getChildren().add(name);
-
-        hBox.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
-                ChatContact.of(contact).getStage().show();
-            }
-        });
-
-        setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        setGraphic(hBox);
     }
 }
